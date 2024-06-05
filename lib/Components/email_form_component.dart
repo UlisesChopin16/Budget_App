@@ -24,6 +24,11 @@ class EmailFormComponent extends HookConsumerWidget {
       hintText: 'Email',
       validator: validator,
       keyboardType: TextInputType.emailAddress,
+      suffixIcon: const Icon(
+        Icons.email,
+        color: Colors.white,
+        size: 30,
+      ),
       prefixIcon: const Icon(
         Icons.email,
         color: Colors.black,

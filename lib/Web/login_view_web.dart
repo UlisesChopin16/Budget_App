@@ -12,6 +12,7 @@ class LoginViewWeb extends HookConsumerWidget {
     double width = MediaQuery.of(context).size.width;
     return SafeArea(
       child: Scaffold(
+        backgroundColor: Colors.white,
         body: SizedBox(
           height: height > 600 ? height : 600,
           child: Center(

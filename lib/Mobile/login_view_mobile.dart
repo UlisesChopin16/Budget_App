@@ -11,6 +11,7 @@ class LoginViewMobile extends HookConsumerWidget {
 
     return const SafeArea(
       child: Scaffold(
+        backgroundColor: Colors.white,
         body: Center(
           child: LoginFormComponent(),
         ),

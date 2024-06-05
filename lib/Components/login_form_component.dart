@@ -125,7 +125,7 @@ class LoginFormComponent extends HookConsumerWidget {
               buttonType: ButtonType.google,
               btnColor: Colors.black,
               btnTextColor: Colors.white,
-              buttonSize: ButtonSize.medium,
+              buttonSize: ButtonSize.large,
               onPressed: () async {
                 if (kIsWeb){
                   await viewModelProvider.loginWithGoogleWeb(context);
