@@ -2,7 +2,7 @@ import 'package:budget_app/Mobile/expense_view_mobile.dart';
 import 'package:budget_app/Mobile/login_view_mobile.dart';
 import 'package:budget_app/Web/expense_view_web.dart';
 import 'package:budget_app/Web/login_view_web.dart';
-import 'package:budget_app/view_model.dart';
+import 'package:budget_app/login_view_model.dart';
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
@@ -11,7 +11,7 @@ class ResponsiveHandler extends HookConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final viewModelProvider = ref.watch(viewModel);
+    final viewModelProvider = ref.watch(loginViewModel);
     viewModelProvider.isLoggedIn();
 
     if (viewModelProvider.isLogged) {

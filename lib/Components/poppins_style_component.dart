@@ -1,74 +1,70 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
-class SansStyleComponent extends StatelessWidget {
+class PoppinsStyleComponent extends StatelessWidget {
   final String text;
   final double fontSize;
   final Color color;
-  final FontWeight fontWeight;
+  final FontWeight? fontWeight;
+  final TextAlign? textAlign;
 
-  const SansStyleComponent({
+  const PoppinsStyleComponent({
     super.key,
     required this.text,
     this.fontSize = 16,
-    this.fontWeight = FontWeight.normal,
     this.color = Colors.black,
+    this.fontWeight,
+    this.textAlign,
   });
 
   @override
   Widget build(BuildContext context) {
     return Text(
       text,
-      style: GoogleFonts.openSans(
+      style: GoogleFonts.poppins(
         fontSize: fontSize,
-        fontWeight: fontWeight,
         color: color,
+        fontWeight: fontWeight,
       ),
     );
   }
 }
 
-class NormalSans extends StatelessWidget {
+class NormalPoppins extends StatelessWidget {
   final String text;
   final double fontSize;
   final Color color;
+  final TextAlign? textAlign;
 
-  const NormalSans({
-    super.key,
-    required this.text,
-    this.fontSize = 16,
-    this.color = Colors.black,
-  });
+  const NormalPoppins({super.key, required this.text, this.fontSize = 16, this.color = Colors.black, this.textAlign});
 
   @override
   Widget build(BuildContext context) {
-    return SansStyleComponent(
+    return PoppinsStyleComponent(
       text: text,
       fontSize: fontSize,
       color: color,
+      textAlign: textAlign,
     );
   }
 }
 
-class BoldSans extends StatelessWidget {
+class BoldPoppins extends StatelessWidget {
   final String text;
   final double fontSize;
   final Color color;
+  final TextAlign? textAlign;
 
-  const BoldSans({
-    super.key,
-    required this.text,
-    this.fontSize = 16,
-    this.color = Colors.black,
-  });
+  const BoldPoppins({super.key, required this.text, this.fontSize = 16, this.color = Colors.black, this.textAlign});
 
   @override
   Widget build(BuildContext context) {
-    return SansStyleComponent(
+    return PoppinsStyleComponent(
       text: text,
       fontSize: fontSize,
-      fontWeight: FontWeight.bold,
       color: color,
+      fontWeight: FontWeight.bold,
+      textAlign: textAlign,
     );
   }
 }

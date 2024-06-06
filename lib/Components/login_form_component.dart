@@ -1,7 +1,8 @@
 import 'package:budget_app/Components/email_form_component.dart';
+import 'package:budget_app/Components/material_button_component.dart';
 import 'package:budget_app/Components/password_form_component.dart';
 import 'package:budget_app/Components/sans_style_component.dart';
-import 'package:budget_app/view_model.dart';
+import 'package:budget_app/login_view_model.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -13,7 +14,7 @@ class LoginFormComponent extends HookConsumerWidget {
   const LoginFormComponent({super.key});
 
   static void onPressedRegister(BuildContext context, WidgetRef ref) async {
-    final viewModelProvider = ref.read(viewModel);
+    final viewModelProvider = ref.read(loginViewModel);
 
     if (viewModelProvider.formKey.currentState!.validate()) {
       await viewModelProvider.register(context, viewModelProvider.emailController.text,
@@ -23,7 +24,7 @@ class LoginFormComponent extends HookConsumerWidget {
   }
 
   static void onPressedLogin(BuildContext context, WidgetRef ref) {
-    final viewModelProvider = ref.read(viewModel);
+    final viewModelProvider = ref.read(loginViewModel);
 
     if (viewModelProvider.formKey.currentState!.validate()) {
       viewModelProvider.login(context, viewModelProvider.emailController.text,
@@ -33,7 +34,7 @@ class LoginFormComponent extends HookConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final viewModelProvider = ref.watch(viewModel);
+    final viewModelProvider = ref.watch(loginViewModel);
 
     return SingleChildScrollView(
       child: Form(
@@ -72,13 +73,8 @@ class LoginFormComponent extends HookConsumerWidget {
                 SizedBox(
                   width: 150,
                   height: 50,
-                  child: MaterialButton(
+                  child: MaterialButtonComponent(
                     onPressed: () => onPressedRegister(context, ref),
-                    splashColor: Colors.grey,
-                    color: Colors.black,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(10),
-                    ),
                     child: const NormalSans(
                       text: 'Register',
                       fontSize: 25,
@@ -102,19 +98,13 @@ class LoginFormComponent extends HookConsumerWidget {
                 SizedBox(
                   width: 150,
                   height: 50,
-                  child: MaterialButton(
-                    onPressed: () => onPressedLogin(context, ref),
-                    splashColor: Colors.grey,
-                    color: Colors.black,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(10),
-                    ),
-                    child: const NormalSans(
-                      text: 'Login',
-                      fontSize: 25,
-                      color: Colors.white,
-                    ),
-                  ),
+                  child: MaterialButtonComponent(
+                      onPressed: () => onPressedLogin(context, ref),
+                      child: const NormalSans(
+                        text: 'Login',
+                        fontSize: 25,
+                        color: Colors.white,
+                      )),
                 ),
               ],
             ),
@@ -127,9 +117,9 @@ class LoginFormComponent extends HookConsumerWidget {
               btnTextColor: Colors.white,
               buttonSize: ButtonSize.large,
               onPressed: () async {
-                if (kIsWeb){
+                if (kIsWeb) {
                   await viewModelProvider.loginWithGoogleWeb(context);
-                }else{
+                } else {
                   await viewModelProvider.loginWithGoogleMobile(context);
                 }
               },
