@@ -4,40 +4,48 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 
-final loginViewModel =
-    ChangeNotifierProvider.autoDispose((ref) => LoginViewModel());
+// this is the view model for the login view and it is used to handle the login and registration of the user
+final loginViewModel = ChangeNotifierProvider.autoDispose((ref) => LoginViewModel());
+
+// this is the provider that listens to the auth state of the user
+// this provide is used to check if the user is logged in or not
+// and do it only once
+final authStateProvider = StreamProvider.autoDispose<User?>((ref) {
+  return ref.read(loginViewModel).authStateChange;
+});
 
 class LoginViewModel extends ChangeNotifier {
   final _auth = FirebaseAuth.instance;
 
-  bool isLogged = false;
+  // bool isLogged = false;
   bool isObscure = true;
 
   final GlobalKey<FormState> formKey = GlobalKey<FormState>();
 
   final emailController = TextEditingController();
   final passwordController = TextEditingController();
+  
+  Stream<User?> get authStateChange => _auth.authStateChanges();
 
-  Future<void> isLoggedIn() async {
-    _auth.authStateChanges().listen(
-      (User? user) {
-        if (user == null) {
-          isLogged = false;
-        } else {
-          isLogged = true;
-        }
-        notifyListeners();
-      },
-    );
-  }
+  // Future<void> isLoggedIn() async {
+  //   _auth.authStateChanges().listen(
+  //     (User? user) {
+  //       if (user == null) {
+  //         isLogged = false;
+  //       } else {
+  //         isLogged = true;
+  //       }
+  //       notifyListeners();
+  //     },
+  //   );
+  // }
 
   void toggleObscure() {
     isObscure = !isObscure;
     notifyListeners();
   }
 
-  Future<void> register(
-      BuildContext context, String email, String password) async {
+  Future<void> register(BuildContext context, String email, String password) async {
     await _auth
         .createUserWithEmailAndPassword(
       email: email,
@@ -62,8 +70,7 @@ class LoginViewModel extends ChangeNotifier {
     );
   }
 
-  Future<void> login(
-      BuildContext context, String email, String password) async {
+  Future<void> login(BuildContext context, String email, String password) async {
     await _auth
         .signInWithEmailAndPassword(
       email: email,
@@ -110,26 +117,27 @@ class LoginViewModel extends ChangeNotifier {
 
   // method to login with google in mobile
   Future<void> loginWithGoogleMobile(BuildContext context) async {
-    final GoogleSignInAccount? googleUser =
-        await GoogleSignIn().signIn().then(
-          (value) {
-            SnackBarComponent.successfullMessage(
-              context,
-              'User logged in successfully',
-            );
-          },
-        ).onError(
+    final GoogleSignInAccount? googleUser = await GoogleSignIn().signIn().then(
+      (value) {
+        SnackBarComponent.successfullMessage(
+          context,
+          'User logged in successfully',
+        );
+        return value;
+      },
+    ).onError(
       (error, stackTrace) {
         SnackBarComponent.errorMessage(
           context,
           error.toString().replaceAll(RegExp('\\[.*?\\]'), ''),
         );
+        return null;
       },
     );
+
     if (googleUser == null) return;
 
-    final GoogleSignInAuthentication googleAuth =
-        await googleUser.authentication;
+    final GoogleSignInAuthentication googleAuth = await googleUser.authentication;
 
     final credential = GoogleAuthProvider.credential(
       accessToken: googleAuth.accessToken,
@@ -138,6 +146,7 @@ class LoginViewModel extends ChangeNotifier {
 
     await _auth.signInWithCredential(credential).then(
       (value) {
+        value.user!.updateDisplayName(googleUser.displayName);
         SnackBarComponent.successfullMessage(
           context,
           'User logged in successfully',

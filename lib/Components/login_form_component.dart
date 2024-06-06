@@ -22,7 +22,6 @@ class LoginFormComponent extends HookConsumerWidget {
         loginViewModelProvider.emailController.text,
         loginViewModelProvider.passwordController.text,
       );
-      loginViewModelProvider.isLogged;
     }
   }
 
@@ -40,7 +39,7 @@ class LoginFormComponent extends HookConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final loginViewModelProvider = ref.watch(loginViewModel);
+    final loginViewModelProvider = ref.read(loginViewModel);
 
     return SingleChildScrollView(
       child: Form(

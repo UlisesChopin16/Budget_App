@@ -11,29 +11,47 @@ class ResponsiveHandler extends HookConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final viewModelProvider = ref.watch(loginViewModel);
-    viewModelProvider.isLoggedIn();
-
-    if (viewModelProvider.isLogged) {
-      return LayoutBuilder(
-        builder: (context, constraints) {
-          if (constraints.maxWidth > 800) {
-            return const ExpenseViewWeb();
-          } else {
-            return const ExpenseViewMobile();
-          }
-        },
-      );
-    } else {
-      return LayoutBuilder(
-        builder: (context, constraints) {
-          if (constraints.maxWidth > 800) {
-            return const LoginViewWeb();
-          } else {
-            return const LoginViewMobile();
-          }
-        },
-      );
-    }
+    final authState = ref.watch(authStateProvider);
+    
+    return authState.when(
+      data: (value) {
+        if (value == null) {
+          return LayoutBuilder(
+            builder: (context, constraints) {
+              if (constraints.maxWidth > 800) {
+                return const LoginViewWeb();
+              } else {
+                return const LoginViewMobile();
+              }
+            },
+          );
+        }
+        return LayoutBuilder(
+          builder: (context, constraints) {
+            if (constraints.maxWidth > 800) {
+              return const ExpenseViewWeb();
+            } else {
+              return const ExpenseViewMobile();
+            }
+          },
+        );
+      },
+      loading: () {
+        return const Center(
+          child: CircularProgressIndicator(),
+        );
+      },
+      error: (error, stackTrace) {
+        return LayoutBuilder(
+          builder: (context, constraints) {
+            if (constraints.maxWidth > 800) {
+              return const LoginViewWeb();
+            } else {
+              return const LoginViewMobile();
+            }
+          },
+        );
+      },
+    );
   }
 }
