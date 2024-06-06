@@ -3,6 +3,7 @@ import 'package:budget_app/Components/material_button_component.dart';
 import 'package:budget_app/Components/poppins_style_component.dart';
 import 'package:budget_app/Components/sans_style_component.dart';
 import 'package:budget_app/Components/snack_bar_component.dart';
+import 'package:budget_app/expense_model.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -12,13 +13,10 @@ final expenseViewModel =
     ChangeNotifierProvider.autoDispose<ExpenseViewModel>((ref) => ExpenseViewModel());
 
 class ExpenseViewModel extends ChangeNotifier {
-
   final _auth = FirebaseAuth.instance;
 
-  List expensesName = [];
-  List expensesAmount = [];
-  List incomesName = [];
-  List incomesAmount = [];
+  List<ExpenseModel> expenses = [];
+  List<ExpenseModel> incomes = [];
 
   int totalExpense = 0;
   int totalIncome = 0;
@@ -30,7 +28,31 @@ class ExpenseViewModel extends ChangeNotifier {
   late CollectionReference incomesCollection =
       userCollection.doc(_auth.currentUser!.uid).collection('incomes');
 
-  
+  add(GlobalKey<FormState> formKey, String name, int amount, CollectionReference collection,
+      BuildContext context) async {
+    if (formKey.currentState!.validate()) {
+      await collection.add({
+        'name': name,
+        'amount': amount,
+      }).then(
+        (value) {
+          SnackBarComponent.successfullMessage(
+            context,
+            'Expense added',
+          );
+        },
+      ).onError(
+        (error, stackTrace) {
+          SnackBarComponent.errorMessage(
+            context,
+            error.toString().replaceAll(RegExp('\\[.*?\\]'), ''),
+          );
+        },
+      );
+      if (!context.mounted) return;
+      Navigator.pop(context);
+    }
+  }
 
   Future addExpense(BuildContext context) async {
     final formKey = GlobalKey<FormState>();
@@ -42,31 +64,6 @@ class ExpenseViewModel extends ChangeNotifier {
         return 'This field is required';
       }
       return null;
-    }
-
-    add() async {
-      if (formKey.currentState!.validate()) {
-        await expensesCollection.add({
-          'name': controllerName.text,
-          'amount': controllerAmount.text,
-        }).then(
-          (value) {
-            SnackBarComponent.successfullMessage(
-              context,
-              'Expense added',
-            );
-          },
-        ).onError(
-          (error, stackTrace) {
-            SnackBarComponent.errorMessage(
-              context,
-              error.toString().replaceAll(RegExp('\\[.*?\\]'), ''),
-            );
-          },
-        );
-        if (!context.mounted) return;
-        Navigator.pop(context);
-      }
     }
 
     return await showDialog(
@@ -106,7 +103,15 @@ class ExpenseViewModel extends ChangeNotifier {
         ),
         actions: [
           MaterialButtonComponent(
-            onPressed: add,
+            onPressed: () async {
+              await add(
+                formKey,
+                controllerName.text,
+                int.parse(controllerAmount.text),
+                expensesCollection,
+                context,
+              );
+            },
             child: const NormalSans(
               text: 'Save',
               color: Colors.white,
@@ -127,31 +132,6 @@ class ExpenseViewModel extends ChangeNotifier {
         return 'This field is required';
       }
       return null;
-    }
-
-    add() async {
-      if (formKey.currentState!.validate()) {
-        await incomesCollection.add({
-          'name': controllerName.text,
-          'amount': controllerAmount.text,
-        }).then(
-          (value) {
-            SnackBarComponent.successfullMessage(
-              context,
-              'Income added',
-            );
-          },
-        ).onError(
-          (error, stackTrace) {
-            SnackBarComponent.errorMessage(
-              context,
-              error.toString().replaceAll(RegExp('\\[.*?\\]'), ''),
-            );
-          },
-        );
-        if (!context.mounted) return;
-        Navigator.pop(context);
-      }
     }
 
     return await showDialog(
@@ -191,7 +171,15 @@ class ExpenseViewModel extends ChangeNotifier {
         ),
         actions: [
           MaterialButtonComponent(
-            onPressed: add,
+            onPressed: () async {
+              await add(
+                formKey,
+                controllerName.text,
+                int.parse(controllerAmount.text),
+                incomesCollection,
+                context,
+              );
+            },
             child: const NormalSans(
               text: 'Save',
               color: Colors.white,
@@ -202,16 +190,15 @@ class ExpenseViewModel extends ChangeNotifier {
     );
   }
 
-
   void calculate() {
     totalExpense = 0;
     totalIncome = 0;
 
-    for (int i = 0; i < expensesAmount.length; i++) {
-      totalExpense = totalExpense + int.parse(expensesAmount[i]);
+    for (int i = 0; i < expenses.length; i++) {
+      totalExpense = totalExpense + expenses[i].amount;
     }
-    for (int i = 0; i < incomesAmount.length; i++) {
-      totalIncome = totalIncome + int.parse(incomesAmount[i]);
+    for (int i = 0; i < incomes.length; i++) {
+      totalIncome = totalIncome + incomes[i].amount;
     }
 
     budgetLeft = totalIncome - totalExpense;
@@ -219,12 +206,10 @@ class ExpenseViewModel extends ChangeNotifier {
   }
 
   void expensesStream() async {
-    await for (var snapshot in expensesCollection.snapshots()) {
-      expensesName = [];
-      expensesAmount = [];
+    await for (var snapshot in expensesCollection.orderBy('amount', descending: true).snapshots()) {
+      expenses.clear();
       for (var expense in snapshot.docs) {
-        expensesName.add(expense['name']);
-        expensesAmount.add(expense['amount']);
+        expenses.add(ExpenseModel.fromJson(expense.data() as Map<String, dynamic>));
         notifyListeners();
       }
       calculate();
@@ -232,12 +217,10 @@ class ExpenseViewModel extends ChangeNotifier {
   }
 
   void incomesStream() async {
-    await for (var snapshot in incomesCollection.snapshots()) {
-      incomesName = [];
-      incomesAmount = [];
+    await for (var snapshot in incomesCollection.orderBy('amount', descending: true).snapshots()) {
+      incomes.clear();
       for (var income in snapshot.docs) {
-        incomesName.add(income['name']);
-        incomesAmount.add(income['amount']);
+        incomes.add(ExpenseModel.fromJson(income.data() as Map<String, dynamic>));
         notifyListeners();
       }
       calculate();

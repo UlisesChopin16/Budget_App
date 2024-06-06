@@ -70,14 +70,12 @@ class ExpenseViewMobile extends HookConsumerWidget {
                 children: <Widget>[
                   // Expense list
                   ContainerDataListM(
-                    names: expenseviewModelProvider.expensesName,
-                    amounts: expenseviewModelProvider.expensesAmount,
+                    listModel: expenseviewModelProvider.expenses,
                     nameContainer: 'Expenses',
                   ),
                   // Income list
                   ContainerDataListM(
-                    names: expenseviewModelProvider.incomesName,
-                    amounts: expenseviewModelProvider.incomesAmount,
+                    listModel: expenseviewModelProvider.incomes,
                     nameContainer: 'Incomes',
                   ),
                 ],

@@ -22,10 +22,11 @@ class ExpenseViewWeb extends HookConsumerWidget {
 
     final loginviewModelProvider = ref.watch(loginViewModel);
     final expenseviewModelProvider = ref.watch(expenseViewModel);
-
-    expenseviewModelProvider.expensesStream();
-    expenseviewModelProvider.incomesStream();
-
+    if (isLoading) {
+      expenseviewModelProvider.expensesStream();
+      expenseviewModelProvider.incomesStream();
+      isLoading = false;
+    }
     return SafeArea(
       child: Scaffold(
         backgroundColor: Colors.white,
@@ -101,13 +102,11 @@ class ExpenseViewWeb extends HookConsumerWidget {
                 children: [
                   ContainerDataList(
                     nameContainer: 'Expenses',
-                    names: expenseviewModelProvider.expensesName,
-                    amounts: expenseviewModelProvider.expensesAmount,
+                    listModel: expenseviewModelProvider.expenses,
                   ),
                   ContainerDataList(
                     nameContainer: 'Incomes',
-                    names: expenseviewModelProvider.incomesName,
-                    amounts: expenseviewModelProvider.incomesAmount,
+                    listModel: expenseviewModelProvider.incomes,
                   )
                 ],
               ),

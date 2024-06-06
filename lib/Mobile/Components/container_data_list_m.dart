@@ -1,16 +1,15 @@
 import 'package:budget_app/Components/poppins_style_component.dart';
+import 'package:budget_app/expense_model.dart';
 import 'package:flutter/material.dart';
 
 class ContainerDataListM extends StatelessWidget {
   final String nameContainer;
-  final List names;
-  final List amounts;
+  final List<ExpenseModel> listModel;
 
   const ContainerDataListM({
     super.key,
-    required this.names,
-    required this.amounts,
     required this.nameContainer,
+    required this.listModel,
   });
 
   @override
@@ -34,18 +33,18 @@ class ContainerDataListM extends StatelessWidget {
             ),
           ),
           child: ListView.builder(
-            itemCount: amounts.length,
+            itemCount: listModel.length,
             itemBuilder: (context, index) {
               return Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: <Widget>[
                   NormalPoppins(
-                    text: names[index],
+                    text: listModel[index].name,
                     fontSize: 12,
                   ),
                   NormalPoppins(
-                    text: amounts[index],
+                    text: listModel[index].amount.toString(),
                     fontSize: 12,
                   ),
                 ],

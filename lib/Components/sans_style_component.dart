@@ -19,6 +19,7 @@ class SansStyleComponent extends StatelessWidget {
   Widget build(BuildContext context) {
     return Text(
       text,
+      overflow: TextOverflow.ellipsis,
       style: GoogleFonts.openSans(
         fontSize: fontSize,
         fontWeight: fontWeight,
