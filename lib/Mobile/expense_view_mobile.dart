@@ -16,6 +16,10 @@ class ExpenseViewMobile extends HookConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final expenseviewModelProvider = ref.watch(expenseViewModel);
     final loginViewModelProvider = ref.watch(loginViewModel);
+
+    expenseviewModelProvider.expensesStream();
+    expenseviewModelProvider.incomesStream();
+
     double width = MediaQuery.of(context).size.width;
 
     int totalExpense = 0;

@@ -14,31 +14,37 @@ class LoginFormComponent extends HookConsumerWidget {
   const LoginFormComponent({super.key});
 
   static void onPressedRegister(BuildContext context, WidgetRef ref) async {
-    final viewModelProvider = ref.read(loginViewModel);
+    final loginViewModelProvider = ref.read(loginViewModel);
 
-    if (viewModelProvider.formKey.currentState!.validate()) {
-      await viewModelProvider.register(context, viewModelProvider.emailController.text,
-          viewModelProvider.passwordController.text);
-      viewModelProvider.isLogged;
+    if (loginViewModelProvider.formKey.currentState!.validate()) {
+      await loginViewModelProvider.register(
+        context,
+        loginViewModelProvider.emailController.text,
+        loginViewModelProvider.passwordController.text,
+      );
+      loginViewModelProvider.isLogged;
     }
   }
 
   static void onPressedLogin(BuildContext context, WidgetRef ref) {
-    final viewModelProvider = ref.read(loginViewModel);
+    final loginViewModelProvider = ref.read(loginViewModel);
 
-    if (viewModelProvider.formKey.currentState!.validate()) {
-      viewModelProvider.login(context, viewModelProvider.emailController.text,
-          viewModelProvider.passwordController.text);
+    if (loginViewModelProvider.formKey.currentState!.validate()) {
+      loginViewModelProvider.login(
+        context,
+        loginViewModelProvider.emailController.text,
+        loginViewModelProvider.passwordController.text,
+      );
     }
   }
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final viewModelProvider = ref.watch(loginViewModel);
+    final loginViewModelProvider = ref.watch(loginViewModel);
 
     return SingleChildScrollView(
       child: Form(
-        key: viewModelProvider.formKey,
+        key: loginViewModelProvider.formKey,
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
@@ -118,9 +124,9 @@ class LoginFormComponent extends HookConsumerWidget {
               buttonSize: ButtonSize.large,
               onPressed: () async {
                 if (kIsWeb) {
-                  await viewModelProvider.loginWithGoogleWeb(context);
+                  await loginViewModelProvider.loginWithGoogleWeb(context);
                 } else {
-                  await viewModelProvider.loginWithGoogleMobile(context);
+                  await loginViewModelProvider.loginWithGoogleMobile(context);
                 }
               },
             ),

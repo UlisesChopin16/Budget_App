@@ -8,8 +8,8 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
-final expenseViewModel =
-    ChangeNotifierProvider.autoDispose<ExpenseViewModel>((ref) => ExpenseViewModel());
+final expenseViewModel = ChangeNotifierProvider.autoDispose<ExpenseViewModel>(
+    (ref) => ExpenseViewModel());
 
 class ExpenseViewModel extends ChangeNotifier {
   final _auth = FirebaseAuth.instance;
@@ -19,7 +19,8 @@ class ExpenseViewModel extends ChangeNotifier {
   List incomesName = [];
   List incomesAmount = [];
 
-  CollectionReference userCollection = FirebaseFirestore.instance.collection('users');
+  CollectionReference userCollection =
+      FirebaseFirestore.instance.collection('users');
   late CollectionReference expenses =
       userCollection.doc(_auth.currentUser!.uid).collection('expenses');
   late CollectionReference incomes =
@@ -202,6 +203,18 @@ class ExpenseViewModel extends ChangeNotifier {
       for (var expense in snapshot.docs) {
         expensesName.add(expense['name']);
         expensesAmount.add(expense['amount']);
+        notifyListeners();
+      }
+    }
+  }
+
+  void incomesStream() async {
+    await for (var snapshot in incomes.snapshots()) {
+      incomesName = [];
+      incomesAmount = [];
+      for (var income in snapshot.docs) {
+        incomesName.add(income['name']);
+        incomesAmount.add(income['amount']);
         notifyListeners();
       }
     }
